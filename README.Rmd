@@ -1,0 +1,63 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# npncaa
+
+The `npncaa` package scrapes NCAA tournament info from https://www.sports-reference.com/.
+
+## Installation
+
+You can install npncaa from github with:
+
+```{r gh-installation, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("nickpaul7/npcnaa")
+```
+
+## Example
+
+To collect data for a given year use the code below:
+
+```{r example}
+library(npncaa)
+
+year <- 2019
+
+df <- get_bracket_data(2019)
+
+```
+
+The `get_bracket_data()` function will return a data frame.
+
+```{r}
+library(tidyverse)
+
+glimpse(df)
+```
+
+Finally, you can get all data from 1985 to the present using the following code
+
+```{r, eval = FALSE}
+library(tidyverse)
+library(npncaa)
+
+years <- c(1985:2019)
+
+df_all_years <- purrr::map_df(years, get_bracket_data)
+```
+
+
+
