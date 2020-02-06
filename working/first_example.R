@@ -10,13 +10,27 @@ library(devtools)
 #https://callumgwtaylor.github.io/blog/2018/02/01/using-rselenium-and-docker-to-webscrape-in-r-using-the-who-snake-database/
 
 
+# need a functon to get regions from sheet
+
+# iterate over regions you need
+
+
 get_region <- function(region){
 
     # get the regions from the website
 
-    regions <- c("East"  )
+    regions <- html %>%
+        html_nodes(".switcher") %>%
+        html_nodes("div") %>%
+        html_text()
 
-    region_num <- regions[region]
+    region_numbers <- c(1:length(regions))
+
+    names(region_numbers) <- regions
+
+    region_numbers
+
+    region_num <- region_numbers[region]
 
     # start remote driver ----------------------------------------------------------
     remDr <- RSelenium::remoteDriver(remoteServerAddr = "localhost",
@@ -33,6 +47,10 @@ get_region <- function(region){
 
     remDr$screenshot(display = TRUE)
 
+
+    selector <- stringr::str_c( "#content > div.switcher.filter > div:nth-child(",
+                                region_num,
+                                ") > a")
 
     # click a button
     element <- remDr$findElement(using = 'css selector',
