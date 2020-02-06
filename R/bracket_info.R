@@ -6,6 +6,8 @@
 #'@export
 get_bracket_data <- function(year){
 
+    `%>%` <- magrittr::`%>%`
+
     url <- create_bracket_url(year)
 
     html <- xml2::read_html(url)
@@ -52,6 +54,8 @@ get_region_names <- function(html){
 
 get_region_data <- function(html, region){
 
+    `%>%` <- magrittr::`%>%`
+
     if(region == "national"){
 
         region_id <- "#national"
@@ -69,13 +73,13 @@ get_region_data <- function(html, region){
     }
 
     rounds <- html %>%
-        html_nodes(region_id) %>%
-        html_nodes(class) %>%
-        html_nodes(".round")
+        rvest::html_nodes(region_id) %>%
+        rvest::html_nodes(class) %>%
+        rvest::html_nodes(".round")
 
     df_rounds <- purrr::map(rounds, get_round_data) %>%
-        bind_rows(.id = "round") %>%
-        mutate(region = region,
+        dplyr::bind_rows(.id = "round") %>%
+        dplyr::mutate(region = region,
                round = as.numeric(round) + round_inflator)
 
     df_rounds
@@ -83,6 +87,8 @@ get_region_data <- function(html, region){
 }
 
 get_round_data <- function(round_node){
+
+    `%>%` <- magrittr::`%>%`
 
     winner_seed <- round_node %>%
         rvest::html_nodes(".winner") %>%
