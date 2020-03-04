@@ -2,3 +2,4 @@
 
 export(create_bracket_url)
 export(get_bracket_data)
+export(ncaa_team_stats)

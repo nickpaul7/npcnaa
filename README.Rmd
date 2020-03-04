@@ -4,19 +4,20 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "README-",
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  eval = FALSE
 )
 ```
 
 # npncaa
 
-The `npncaa` package scrapes NCAA tournament info from https://www.sports-reference.com/.
+The `npncaa` package scrapes NCAA info from https://www.sports-reference.com/.
 
 ## Installation
 
@@ -27,7 +28,7 @@ You can install npncaa from github with:
 devtools::install_github("nickpaul7/npcnaa")
 ```
 
-## Example
+## Tournament Info
 
 To collect data for a given year use the code below:
 
@@ -36,7 +37,7 @@ library(npncaa)
 
 year <- 2019
 
-df <- get_bracket_data(2019)
+df_bracket <- get_bracket_data(2019)
 
 ```
 
@@ -54,9 +55,67 @@ Finally, you can get all data from 1985 to the present using the following code
 library(tidyverse)
 library(npncaa)
 
-years <- c(1985:2019)
+years <- c(1993:2019)
 
 df_all_years <- purrr::map_df(years, get_bracket_data)
+```
+
+## Team Stats by Year
+
+
+
+```{r}
+# year <- 2019
+# url <- create_team_stats_url(year)
+```
+
+
+
+```{r}
+# url_opponent_advanced <- create_team_stats_url(year, opponent = TRUE, advanced = TRUE)
+# url
+```
+
+Get team stats for a particular year.
+
+Not all years have all options, but the function will alert you when this happens.
+
+```{r}
+# year <- 1955
+# url_opponent_advanced <- create_team_stats_url(year, opponent = FALSE, advanced = FALSE)
+# url_opponent_advanced
+```
+
+```{r}
+df_team_stats <- ncaa_team_stats(2019)
+df_advanced <- ncaa_team_stats(2019, advanced = TRUE)
+df_opponent <- ncaa_team_stats(2019, opponent = TRUE)
+df_advanced_opponent <- ncaa_team_stats(2019, advanced = TRUE, opponent = TRUE)
+```
+
+When the data does not exist, the `ncaa_team_stats()` function will return an empty data frame.  This facilitates pulling data over a period of years without knowing where the end is.
+
+```{r}
+df_advanced_opponent <- ncaa_team_stats(1955, advanced = TRUE, opponent = TRUE)
+```
+
+```{r, eval = FALSE}
+years <- 1993:2019
+df_team_stats_1993_2019 <- purrr::map_df(years, ncaa_team_stats)
+```
+
+## Prepare for ML
+
+```{r, eval = FALSE}
+df_ml <- df_all_years %>% 
+    add_team_stats(df_team_stats_1993_2019) %>% 
+    select_features() %>% 
+    select(diff)
+```
+
+
+```{r}
+
 ```
 
 

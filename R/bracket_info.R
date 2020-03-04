@@ -45,9 +45,10 @@ get_region_names <- function(html){
         rvest::html_nodes(".switcher") %>%
         rvest::html_nodes("div") %>%
         rvest::html_text() %>%
-        stringr::str_to_lower()
+        stringr::str_to_lower() %>%
+        stringr::str_replace_all("\\.| ", "")
 
-    regions[regions == "final four"] <- "national"
+    regions[regions == "finalfour"] <- "national"
 
     regions
 }
@@ -67,7 +68,7 @@ get_region_data <- function(html, region){
         region_id <- region %>%
             stringr::str_c("#", .) %>%
             stringr::str_to_lower()
-        class <- ".team16"
+        class <- ".team16,.team8,.team4"
         round_inflator <- 0
 
     }
@@ -95,32 +96,57 @@ get_round_data <- function(round_node){
         rvest::html_nodes("span") %>%
         rvest::html_text()
 
+    # winner_team <- round_node %>%
+    #     rvest::html_nodes(".winner") %>%
+    #     rvest::html_nodes("a:nth-child(2)") %>%
+    #     rvest::html_text()
+
     winner_team <- round_node %>%
         rvest::html_nodes(".winner") %>%
         rvest::html_nodes("a:nth-child(2)") %>%
-        rvest::html_text()
+        rvest::html_attr("href") %>%
+        stringr::str_extract("(?<=/cbb/schools/).+(?=/\\d{4}\\.html)")
 
     winner_score <- round_node %>%
         rvest::html_nodes(".winner") %>%
         rvest::html_nodes("a:nth-child(3)") %>%
         rvest::html_text()
 
-
     loser_seed <- round_node %>%
-        rvest::html_nodes("div > :not(.winner)") %>%
+        rvest::html_nodes(":not(.bye)") %>%
+        rvest::html_nodes(":not(.winner)") %>%
         rvest::html_nodes("span") %>%
         rvest::html_text()
 
-    loser_team <- round_node %>%
-        rvest::html_nodes("div > :not(.winner)") %>%
-        rvest::html_nodes("a:nth-child(2)") %>%
-        rvest::html_text()
+    # loser_team <- round_node %>%
+    #     rvest::html_nodes(":not(.bye)") %>%
+    #     rvest::html_nodes(":not(.winner)") %>%
+    #     rvest::html_nodes("a:nth-child(2)") %>%
+    #     rvest::html_text()
 
+    loser_team <- round_node %>%
+        rvest::html_nodes(":not(.bye)") %>%
+        rvest::html_nodes(":not(.winner)") %>%
+        rvest::html_nodes("a:nth-child(2)") %>%
+        rvest::html_attr("href") %>%
+        stringr::str_extract("(?<=/cbb/schools/).+(?=/\\d{4}\\.html)")
 
     loser_score <- round_node %>%
-        rvest::html_nodes("div > :not(.winner)") %>%
+        rvest::html_nodes(":not(.bye)") %>%
+        rvest::html_nodes(":not(.winner)") %>%
         rvest::html_nodes("a:nth-child(3)") %>%
         rvest::html_text()
+
+    # loser_team <- round_node %>%
+    #     rvest::html_nodes("div > :not(.winner)") %>%
+    #     rvest::html_nodes("a:nth-child(2)") %>%
+    #     rvest::html_text()
+    #
+    #
+    # loser_score <- round_node %>%
+    #     rvest::html_nodes("div > :not(.winner)") %>%
+    #     rvest::html_nodes("a:nth-child(3)") %>%
+    #     rvest::html_text()
 
 
     tibble::tibble(winner_seed, winner_team, winner_score, loser_seed, loser_team, loser_score)
