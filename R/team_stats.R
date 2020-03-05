@@ -105,10 +105,10 @@ clean_team_stats_df <- function(df, col_names, end_year){
     numeric_cols <- col_names[!col_names %in% c("School", "drop")]
 
     df %>%
-        select_at(col_names) %>%
-        select(-drop) %>%
-        mutate_at(numeric_cols, as.numeric) %>%
-        mutate(end_year = end_year) %>%
+        dplyr::select_at(col_names) %>%
+        dplyr::select(-drop) %>%
+        dplyr::mutate_at(numeric_cols, as.numeric) %>%
+        dplyr::mutate(end_year = end_year) %>%
         clean_team_name()
 
 }
@@ -126,8 +126,8 @@ get_team_stats_data <- function(html){
         rvest::html_nodes(".sortable") %>%
         rvest::html_nodes("tbody") %>%
         rvest::html_nodes("tr:not(.thead)") %>%
-        map(rvest::html_nodes, "td") %>%
-        map(rvest::html_text)
+        purrr::map(rvest::html_nodes, "td") %>%
+        purrr::map(rvest::html_text)
 
 
     team_stats
@@ -141,7 +141,7 @@ convert_team_stats_to_df <- function(team_stats, col_names){
                                 col_names) %>%
         purrr::map(tibble::enframe) %>%
         purrr::map(tidyr::spread, name, value) %>%
-        bind_rows()
+        dplyr::bind_rows()
 
 
     df_team_stats
